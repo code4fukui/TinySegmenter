@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>頻出単語表示 by TinySegmenter</title>
+</head><body>
+
+<h1></h1>
+<textarea id=ta></textarea><br>
+<div id=chartdiv></div>
+<footer>
+<a href=https://github.com/code4fukui/TinySegmenter/>src on GitHub</a>
+</footer>
+
+<script type="module">
+import { ChartBar } from "https://js.sabae.cc/Chart.js";
+import { TinySegmenter } from "./TinySegmenter.js";
+import { ArrayUtil } from "https://js.sabae.cc/ArrayUtil.js";
+
+document.body.querySelector("h1").textContent = document.title;
+
+const makeTable = (data) => {
+  const c = (tag) => document.createElement(tag);
+  const tbl = c("table");
+  const keys = Object.keys(data[0]);
+  const tr = c("tr");
+  tbl.appendChild(tr);
+  for (const key of keys) {
+    const th = c("th");
+    tr.appendChild(th);
+    th.textContent = key;
+  }
+  for (const d of data) {
+    const tr = c("tr");
+    tbl.appendChild(tr);
+    for (const key of keys) {
+      const td = c("td");
+      td.textContent = d[key];
+      tr.appendChild(td);
+    }
+  }
+  return tbl;
+};
+
+const countBy = (ar) => {
+  const names = [];
+  const values = [];
+  for (const a of ar) {
+    const n = names.indexOf(a);
+    if (n == -1) {
+      names.push(a);
+      values.push(1);
+    } else {
+      values[n]++;
+    }
+  }
+  const cnt = {};
+  for (let i = 0; i < names.length; i++) {
+    cnt[names[i]] = values[i];
+  }
+  return cnt;
+};
+ta.onchange = () => {
+  const segs = TinySegmenter.segment(ta.value);
+  const histo0 = countBy(segs);
+  console.log(segs, histo0);
+  const histo = Object.entries(histo0).map(e => {
+    return { name: e[0], value: e[1] };
+  }).filter(a => a.name.length >= 3);
+  histo.sort((a, b) => b.value - a.value);
+  const max = 20;
+  const histo2 = histo.slice(0, Math.min(max, histo.length));
+  console.log(histo2);
+  const chart = new ChartBar(histo2);
+  chartdiv.innerHTML = "";
+  chartdiv.appendChild(chart);
+  chartdiv.appendChild(makeTable(histo));
+};
+
+</script>
+
+<style>
+textarea {
+  width: 90vw;
+  height: 10em;
+}
+chart-bar {
+  float: right;
+}
+table {
+  border: 2px solid #222;
+  border-collapse: collapse;
+}
+td, th {
+  border: 1px solid #222;
+  padding: 0 .5em;
+}
+td:nth-child(2) {
+  text-align: right;
+}
+</style>
+
+</body></html>
+
+
