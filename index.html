@@ -60,14 +60,15 @@ const countBy = (ar) => {
 ta.onchange = () => {
   const segs = TinySegmenter.segment(ta.value);
   const histo0 = countBy(segs);
-  console.log(segs, histo0);
-  const histo = Object.entries(histo0).map(e => {
+  //console.log(segs, histo0);
+  const histo1 = Object.entries(histo0).map(e => {
     return { name: e[0], value: e[1] };
-  }).filter(a => a.name.length >= 3);
+  });
+  const histo = histo1.filter(a => a.name.length >= 3).length == 0 ? histo1 : histo1.filter(a => a.name.length >= 3);
   histo.sort((a, b) => b.value - a.value);
   const max = 20;
   const histo2 = histo.slice(0, Math.min(max, histo.length));
-  console.log(histo2);
+  //console.log(histo2);
   const chart = new ChartBar(histo2);
   chartdiv.innerHTML = "";
   chartdiv.appendChild(chart);
