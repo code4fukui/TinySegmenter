@@ -81,7 +81,7 @@ const segment = (input) => {
   const result = [];
   const seg = ["B3","B2","B1"];
   const ctype = ["O","O","O"];
-  const o = input.split("");
+  const o = [...input];
   for (const i of o) {
     seg.push(i);
     ctype.push(ctype_(i))
