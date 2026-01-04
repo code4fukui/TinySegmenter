@@ -57,16 +57,16 @@ const countBy = (ar) => {
   }
   return cnt;
 };
-ta.onchange = () => {
+ta.onchange = ta.onkeyup = () => {
+  if (ta.value == ta.bkvalue) return;
+  ta.bkvalue = ta.value;
   const segs = TinySegmenter.segment(ta.value);
   const histo0 = countBy(segs);
   //console.log(segs, histo0);
-  const histo1 = Object.entries(histo0).map(e => {
-    return { name: e[0], value: e[1] };
-  });
-  const histo = histo1.filter(a => a.name.length >= 3).length == 0 ? histo1 : histo1.filter(a => a.name.length >= 3);
-  histo.sort((a, b) => b.value - a.value);
+  const histo1 = Object.entries(histo0).map(e => ({name: e[0], value: e[1] }));
   const max = 20;
+  const histo = histo1.length < max ? histo1 : histo1.filter(a => a.name.length >= 3);
+  histo.sort((a, b) => b.value - a.value);
   const histo2 = histo.slice(0, Math.min(max, histo.length));
   //console.log(histo2);
   const chart = new ChartBar(histo2);
